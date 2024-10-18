@@ -3,7 +3,8 @@ require('dotenv').config();
 
 async function connect() {
     try {
-        await mongoose.connect('mongodb://127.0.0.1:27017/page_product', {});
+        // mongoose.set('strictQuery', false)
+        await mongoose.connect('mongodb://127.0.0.1:27017/landing_page_2', {});
         // await mongoose.connect('mongodb+srv://lehai10101010:tien20194184@profuct.ldkskcc.mongodb.net?retryWrites=true&w=majority', {
         //     useNewUrlParser: true,
         //     useUnifiedTopology: true,

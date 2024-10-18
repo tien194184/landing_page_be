@@ -1,21 +1,19 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
 const orderSchema = new Schema({
-    name: { type: String },
-    phone: { type: String },
-    address: { type: String },
-    province: { type: String },
-    district: { type: String },
-    ward: { type: String },
-    house: { type: String },
-    products: { type: String },
-    status: { type: String },
-    createdAt: { type: Date, default: Date.now },
-    userAdmin: { type: String },
-    color: { type: String },
-    voucher: { type: String },
+  productId: { type: Schema.Types.ObjectId, ref: "Product" },
+  quantity: { type: Number, required: true },
+  name: { type: String },
+  phone: { type: String },
+  address: { type: String },
+  status: { type: Number, default: 1 },
+  createdAt: { type: Date, default: Date.now },
+  sellerId: { type: Schema.Types.ObjectId, ref: "User" },
+  color: { type: String },
+  voucher: { type: String },
+  totalMonney: { type: Number },
 });
 
-module.exports = mongoose.model('Order', orderSchema);
+module.exports = mongoose.model("Order", orderSchema);
