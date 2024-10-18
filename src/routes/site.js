@@ -39,7 +39,7 @@ router.get("/user/manage-order", siteController.getListOrder);
 router.post("/user/product/:id/comment", siteController.postComment);
 router.get("/user/product/:id/comment", siteController.getListComment);
 router.post(
-  "/user/product/:id",
+  "/user/product",
   upload.fields([
     { name: "imageProducts[]", maxCount: 10 },
     { name: "imagesComment1[]", maxCount: 4 },
