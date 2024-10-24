@@ -4,16 +4,18 @@ const Schema = mongoose.Schema;
 
 const orderSchema = new Schema({
   productId: { type: Schema.Types.ObjectId, ref: "Product" },
-  quantity: { type: Number, required: true },
   name: { type: String },
-  phone: { type: String },
+  phone: { type: Number },
   address: { type: String },
+  city: { type: String },
   status: { type: Number, default: 1 },
-  createdAt: { type: Date, default: Date.now },
   sellerId: { type: Schema.Types.ObjectId, ref: "User" },
-  color: { type: String },
-  voucher: { type: String },
+  typeProduct: { type: String },
+  quantity: { type: Number, required: true },
+  discount: { type: String },
   totalMonney: { type: Number },
+  tiktokShopDiscount: { type: Number },
+  createdAt: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("Order", orderSchema);

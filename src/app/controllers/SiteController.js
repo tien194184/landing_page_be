@@ -2,6 +2,9 @@ const Order = require("../models/Order");
 const { mutipleMongooseToObject } = require("../../util/mongoose");
 const Product = require("../models/Product");
 const Rating = require("../models/Rating");
+const bcrypt = require("bcrypt");
+const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 
 const cloudinary = require("cloudinary").v2;
 
@@ -157,88 +160,6 @@ class SiteController {
     res.json({ cssPath: "home.css", comment, product, productsImage });
   }
 
-  // async postProduct(req, res, next) {
-  //   // const images = req.files;
-  //   console.log(req.body);
-  //   const productImages = req.files["imageProducts[]"]; // Array of product images
-  //   const commentImages = req.files["imagesComment[]"];
-
-  //   // Array to store the uploaded image URLs from Cloudinary
-  //   let uploadedImages = [],
-  //     uploadedImagesComment = [];
-
-  //   // If images exist, upload each one to Cloudinary
-  //   if (productImages && productImages.length > 0) {
-  //     const uploadPromises = productImages.map((image) =>
-  //       cloudinary.uploader.upload(image.path)
-  //     );
-
-  //     // Wait for all images to be uploaded
-  //     uploadedImages = await Promise.all(uploadPromises);
-  //   }
-
-  //   if (commentImages && commentImages.length > 0) {
-  //     const uploadPromises = commentImages.map((image) =>
-  //       cloudinary.uploader.upload(image.path)
-  //     );
-
-  //     // Wait for all images to be uploaded
-  //     uploadedImagesComment = await Promise.all(uploadPromises);
-  //   }
-
-  //   // Now `uploadedImages` contains the array of uploaded image URLs
-  //   const imageUrls = uploadedImages.map((img) => img.url);
-  //   const imageUrlsComment = uploadedImagesComment.map((img) => img.url);
-  //   console.log(imageUrls);
-  //   console.log(imageUrlsComment);
-  //   const product = new Product({
-  //     productName: req.body.productName,
-  //     price: req.body.price,
-  //     oldPrice: req.body.oldPrice,
-  //     description: req.body.description,
-  //     discount: req.body.discount,
-  //     soldAmount: req.body.soldAmount,
-  //     reviewCount: req.body.reviewCount,
-  //     storeRevenue: req.body.storeRevenue,
-  //     productCount: req.body.productCount,
-  //     reviewCountStore: req.body.reviewCountStore,
-  //     photoReviewCount: req.body.photoReviewCount,
-  //     fiveStarCount: req.body.fiveStarCount,
-  //     fourStarCount: req.body.fourStarCount,
-  //     threeStarCount: req.body.threeStarCount,
-  //     userId: req.body.userId,
-  //     image1: imageUrls[0],
-  //     image2: imageUrls[1],
-  //     image3: imageUrls[2],
-  //     image4: imageUrls[3],
-  //     image5: imageUrls[4],
-  //     image6: imageUrls[5],
-  //     image7: imageUrls[6],
-  //     image8: imageUrls[7],
-  //     image9: imageUrls[8],
-  //     image10: imageUrls[9],
-  //   });
-  //   await product.save();
-  //   const cmt = new Rating({
-  //     productType: req.body.productType,
-  //     comment: req.body.productType,
-  //     imageRating1: imageUrlsComment[0],
-  //     imageRating2: imageUrlsComment[1],
-  //     imageRating3: imageUrlsComment[2],
-  //     imageRating4: imageUrlsComment[3],
-  //     productId: 1,
-  //     createdAt: Date.now() + 7 * 60 * 60 * 1000,
-  //   });
-  //   await cmt.save()
-  //   // console.log(product);
-  //   return res.status(201).json({
-  //     success: true,
-  //     message: "Product uploaded successfully",
-  //     images: imageUrls,
-  //     imageUrlsComment,
-  //   });
-  // }
-
   async uploadImagesToCloudinary(filesArray) {
     const uploadPromises = filesArray.map((file) =>
       cloudinary.uploader.upload(file.path)
@@ -309,24 +230,24 @@ class SiteController {
       image9: productImageUrls[8],
       image10: productImageUrls[9],
     });
-    await product.save();
+    // await product.save();
 
     // Create ratings
-    const ratings = commentImageUrls.map((urls, index) => {
-      return new Rating({
-        productType: req.body[`productType${index + 1}`],
-        comment: req.body[`comment${index + 1}`],
-        imageRating1: urls[0],
-        imageRating2: urls[1],
-        imageRating3: urls[2],
-        imageRating4: urls[3],
-        productId: product._id,
-        createdAt: Date.now() + 7 * 60 * 60 * 1000,
-      });
-    });
+    // const ratings = commentImageUrls.map((urls, index) => {
+    //   return new Rating({
+    //     productType: req.body[`productType${index + 1}`],
+    //     comment: req.body[`comment${index + 1}`],
+    //     imageRating1: urls[0],
+    //     imageRating2: urls[1],
+    //     imageRating3: urls[2],
+    //     imageRating4: urls[3],
+    //     productId: product._id,
+    //     createdAt: Date.now() + 7 * 60 * 60 * 1000,
+    //   });
+    // });
 
     // Save all ratings
-    await Rating.insertMany(ratings);
+    // await Rating.insertMany(ratings);
 
     return res.status(201).json({
       success: true,
@@ -338,6 +259,7 @@ class SiteController {
 
   async getProduct(req, res, next) {
     try {
+      console.log("hahah" + req.user);
       const { slug } = req.params;
       const product = await Product.findOne({ slug: slug });
       const comments = await Rating.find({ productId: product._id });
@@ -352,25 +274,46 @@ class SiteController {
     }
   }
 
-  order(req, res, next) {
+  async order(req, res, next) {
+    const { slug } = req.params;
+    const {
+      name,
+      phone,
+      selectedCity,
+      selectedDistrict,
+      selectedWard,
+      quantity,
+      discount,
+      totalPrice,
+      typeProduct,
+      tiktokShopDiscount,
+    } = req.body;
+    console.log(slug);
+    const product = await Product.findOne({ slug: slug });
     console.log(req.body);
     const order = new Order({
-      productId: 1,
-      quantity: 1,
-      name: "mmm",
-      phone: "03322222",
-      address: "h",
+      productId: product._id,
+      name,
+      phone,
+      city: selectedCity,
+      address: selectedWard + ", " + selectedDistrict + ", " + selectedCity,
       sellerId: "670e3a8cae0f3baeebf5de2c",
-      color: "red",
-      voucher: "jj",
-      totalMonney: "1000",
+      quantity,
+      discount,
+      tiktokShopDiscount,
+      totalPrice,
+      typeProduct,
       createdAt: Date.now() + 7 * 60 * 60 * 1000,
     });
     console.log(order);
-    order
-      .save()
-      .then(() => res.redirect("/xac-nhan-dat-hang"))
-      .catch(next);
+    // order
+    //   .save()
+    //   .then(() => res.redirect("/xac-nhan-dat-hang"))
+    //   .catch(next);
+    return res.status(201).json({
+      success: true,
+      message: "Product uploaded successfully",
+    });
   }
   getListOrder(req, res, next) {
     const perPage = 20; // Số lượng đơn hàng trên mỗi trang
@@ -412,30 +355,66 @@ class SiteController {
       .then(() => res.redirect("back"))
       .catch(next);
   }
-  postComment(req, res, next) {
-    const cmt = new Rating({
-      username: "a**h",
-      avatar: "avatr",
-      //   star: { type: Number, default: 5 },
-      comment: "sp tot",
-      imageRating1: "a.png",
-      imageRating2: "a.png",
-      imageRating3: "",
-      imageRating4: "",
-      feedback: "cam on",
-      //   status: { type: Number, default: 1 },
-      productId: 1,
-      createdAt: Date.now() + 7 * 60 * 60 * 1000,
-    });
-    console.log(cmt);
-    cmt
-      .save()
-      .then(() => res.redirect("/xac-nhan-dat-hang"))
-      .catch(next);
-  }
 
   getListComment(req, res, next) {
     Rating.find({ productId: req.params.id }).then((cmt) => res.json(cmt));
+  }
+
+  async createAccount(req, res, next) {
+    const { name, email, password } = req.body;
+    console.log(req.body);
+    // Check if user already exists
+    const userExists = await User.findOne({ email: email });
+    console.log(userExists);
+    if (userExists) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Hash password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+    // Save user
+    const newUser = new User({ name, email, password: hashedPassword }); // Tạo một instance mới
+    await newUser.save();
+
+    res.status(201).json({ message: "User registered successfully" });
+  }
+
+  async login(req, res, next) {
+    const { email, password } = req.body;
+
+    // Check if user exists
+    const user = await User.findOne({ email: email });
+    console.log(user);
+
+    if (!user) {
+      return res.status(400).json({ message: "User Not Found" });
+    }
+
+    // Compare password with stored hash
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { email: user.email, role: user.role },
+      process.env.SECRET_KEY,
+      {
+        expiresIn: "30d", // Thay đổi thành 30 ngày
+      }
+    );
+
+    const now = new Date(); // Thời gian hiện tại
+    const expirationDate = new Date(now); // Tạo bản sao của thời gian hiện tại
+    expirationDate.setDate(now.getDate() + 30);
+
+    res.json({
+      message: "Login successful",
+      token,
+      role: user.role,
+      expiration: expirationDate.toISOString(),
+    });
   }
 }
 

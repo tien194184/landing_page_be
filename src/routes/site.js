@@ -4,6 +4,7 @@ const siteController = require("../app/controllers/SiteController");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
+const jwt = require("jsonwebtoken");
 
 // const storage = new CloudinaryStorage({
 //     cloudinary: cloudinary,
@@ -31,15 +32,39 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage: storage });
 
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+  console.log(authHeader);
+  if (!authHeader) {
+    return res.status(401).json({ message: "Token không được cung cấp" });
+  }
+
+  const token = authHeader.split(" ")[1]; // Tách lấy token sau "Bearer"
+  console.log(token);
+  // Tiến hành xác thực token (nếu cần)
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    console.log(decoded);
+    req.user = decoded; // Lưu thông tin người dùng vào req
+    next(); // Gọi next để tiếp tục đến controller
+  } catch (error) {
+    return res
+      .status(403)
+      .json({ message: "Token không hợp lệ hoặc đã hết hạn" });
+  }
+}
+
+router.post("/signup", siteController.createAccount);
+router.post("/login", siteController.login);
 router.get("/product/:slug", siteController.getProduct);
-router.post("/order", siteController.order);
-router.put("/user/order/:id", siteController.updateOrder);
+router.post("/order/:slug", siteController.order);
+router.put("/user/order/:id", authenticateToken, siteController.updateOrder);
 router.delete("/user/order/:id", siteController.deleteOrder);
-router.get("/user/manage-order", siteController.getListOrder);
-router.post("/user/product/:id/comment", siteController.postComment);
+router.get("/user/list-order", siteController.getListOrder);
 router.get("/user/product/:id/comment", siteController.getListComment);
 router.post(
   "/user/product",
+  authenticateToken,
   upload.fields([
     { name: "imageProducts[]", maxCount: 10 },
     { name: "imagesComment1[]", maxCount: 4 },
