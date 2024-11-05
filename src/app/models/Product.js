@@ -1,26 +1,28 @@
 const mongoose = require("mongoose");
-const slugify = require('slugify');
+const slugify = require("slugify");
 
 const Schema = mongoose.Schema;
 
 const ProductSchema = new Schema({
   productName: { type: String, required: true },
   price: { type: Number, required: true },
-  oldPrice: { type: Number },
+  oldPrice: { type: Number, required: true },
   description: { type: String },
   slug: { type: String, unique: true },
-  discount: { type: Number },
-  soldAmount: { type: Number },
-  reviewCount: { type: Number },
-  storeRevenue: { type: Number },
-  productCount: { type: Number },
-  reviewCountStore: { type: Number },
-  photoReviewCount: { type: Number },
-  fiveStarCount: { type: Number },
-  fourStarCount: { type: Number },
-  threeStarCount: { type: Number },
-  userId: { type: Schema.Types.ObjectId, ref: "User" },
+  discount: { type: Number, required: true },
+  soldAmount: { type: Number, required: true },
+  reviewCount: { type: Number, required: true },
+  storeRevenue: { type: Number, required: true },
+  productCount: { type: Number, required: true },
+  reviewCountStore: { type: Number, required: true },
+  photoReviewCount: { type: Number, required: true },
+  fiveStarCount: { type: Number, required: true },
+  fourStarCount: { type: Number, required: true },
+  threeStarCount: { type: Number, required: true },
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   status: { type: Number, default: 1 },
+  imageShop: { type: String, required: true },
+  shop: { type: String, required: true },
   image1: { type: String },
   image2: { type: String },
   image3: { type: String },

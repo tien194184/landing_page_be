@@ -168,7 +168,9 @@ class SiteController {
   }
 
   async postProduct(req, res, next) {
+    console.log(req.user.id);
     const productImages = req.files["imageProducts[]"] || [];
+    const imageShop = req.files["imageShop"][0].path || null;
     const commentImages = [
       req.files["imagesComment1[]"] || [],
       req.files["imagesComment2[]"] || [],
@@ -197,6 +199,10 @@ class SiteController {
         images.length > 0 ? uploadImagesToCloudinary(images) : []
       )
     );
+    const imageShopUrl = imageShop
+      ? await cloudinary.uploader.upload(imageShop)
+      : "";
+    console.log(imageShopUrl);
 
     const commentImageUrls = uploadedCommentImages.map((set) =>
       set.map((img) => img.url)
@@ -218,7 +224,7 @@ class SiteController {
       fiveStarCount: req.body.fiveStarCount,
       fourStarCount: req.body.fourStarCount,
       threeStarCount: req.body.threeStarCount,
-      // userId: req.body.userId || product._id,
+      userId: req.user.id,
       image1: productImageUrls[0],
       image2: productImageUrls[1],
       image3: productImageUrls[2],
@@ -229,10 +235,171 @@ class SiteController {
       image8: productImageUrls[7],
       image9: productImageUrls[8],
       image10: productImageUrls[9],
+      imageShop: imageShopUrl?.url,
+      shop: req.body.nameShop,
     });
-    // await product.save();
+    console.log(product);
+    await product.save();
 
-    // Create ratings
+    const ratings = commentImageUrls.map((urls, index) => {
+      return new Rating({
+        productType: req.body[`productType${index + 1}`],
+        comment: req.body[`comment${index + 1}`],
+        imageRating1: urls[0],
+        imageRating2: urls[1],
+        imageRating3: urls[2],
+        imageRating4: urls[3],
+        productId: product._id,
+        createdAt: Date.now() + 7 * 60 * 60 * 1000,
+      });
+    });
+
+    // Save all ratings
+    await Rating.insertMany(ratings);
+
+    return res.status(201).json({
+      success: true,
+      message: "Product uploaded successfully",
+      images: productImageUrls,
+      imageShop: imageShop,
+      commentImages: commentImageUrls,
+    });
+  }
+
+  async editProduct(req, res, next) {
+    console.log(req.body);
+    const productOfMember = await Product.findOne({
+      slug: req.params.slug,
+      userId: req.user.id,
+    });
+    if (!productOfMember) throw new Error("Sản phẩm không tồn tại");
+    const image1 = req.files["image1"]?.[0] || null;
+    const image2 = req.files["image2"]?.[0] || null;
+    const image3 = req.files["image3"]?.[0] || null;
+    const image4 = req.files["image4"]?.[0] || null;
+    const image5 = req.files["image5"]?.[0] || null;
+    const image6 = req.files["image6"]?.[0] || null;
+    const image7 = req.files["image7"]?.[0] || null;
+    const image8 = req.files["image8"]?.[0] || null;
+    const image9 = req.files["image9"]?.[0] || null;
+    const image10 = req.files["image10"]?.[0] || null;
+    const uploadImage = (image) => {
+      if (!image) return "";
+      return cloudinary.uploader.upload(image.path);
+    };
+    const [
+      imageproduct1,
+      imageproduct2,
+      imageproduct3,
+      imageproduct4,
+      imageproduct5,
+      imageproduct6,
+      imageproduct7,
+      imageproduct8,
+      imageproduct9,
+      imageproduct10,
+    ] = await Promise.all([
+      uploadImage(image1),
+      uploadImage(image2),
+      uploadImage(image3),
+      uploadImage(image4),
+      uploadImage(image5),
+      uploadImage(image6),
+      uploadImage(image7),
+      uploadImage(image8),
+      uploadImage(image9),
+      uploadImage(image10),
+    ]);
+    console.log(
+      image1,
+      image2,
+      image3,
+      image4,
+      image5,
+      image6,
+      image7,
+      image8,
+      image9,
+      image10
+    );
+    console.log([
+      imageproduct1,
+      imageproduct2,
+      imageproduct3,
+      imageproduct4,
+      imageproduct5,
+      imageproduct6,
+      imageproduct7,
+      imageproduct8,
+      imageproduct9,
+      imageproduct10,
+    ]);
+
+    // const productImages = req.files["imageProducts[]"] || [];
+    // const commentImages = [
+    //   req.files["imagesComment1[]"] || [],
+    //   req.files["imagesComment2[]"] || [],
+    //   req.files["imagesComment3[]"] || [],
+    //   req.files["imagesComment4[]"] || [],
+    //   req.files["imagesComment5[]"] || [],
+    //   req.files["imagesComment6[]"] || [],
+    // ];
+
+    const uploadImagesToCloudinary = async (images) => {
+      const uploadPromises = images.map((image) =>
+        cloudinary.uploader.upload(image.path)
+      );
+      return await Promise.all(uploadPromises);
+    };
+
+    // const uploadedProductImages =
+    //   productImages.length > 0
+    //     ? await uploadImagesToCloudinary(productImages)
+    //     : [];
+    // const productImageUrls = uploadedProductImages.map((img) => img.url);
+
+    // const uploadedCommentImages = await Promise.all(
+    //   commentImages.map((images) =>
+    //     images.length > 0 ? uploadImagesToCloudinary(images) : []
+    //   )
+    // );
+
+    // const commentImageUrls = uploadedCommentImages.map((set) =>
+    //   set.map((img) => img.url)
+    // );
+
+    const product = {
+      productName: req.body.productName,
+      price: req.body.price,
+      oldPrice: req.body.oldPrice,
+      description: req.body.description,
+      discount: req.body.discount,
+      soldAmount: req.body.soldAmount,
+      reviewCount: req.body.reviewCount,
+      storeRevenue: req.body.storeRevenue,
+      productCount: req.body.productCount,
+      reviewCountStore: req.body.reviewCountStore,
+      photoReviewCount: req.body.photoReviewCount,
+      fiveStarCount: req.body.fiveStarCount,
+      fourStarCount: req.body.fourStarCount,
+      threeStarCount: req.body.threeStarCount,
+      // imageShop: imageShop,
+      shop: req.body.nameShop,
+      // userId: req.user._id,
+      // image1: productImageUrls[0],
+      // image2: productImageUrls[1],
+      // image3: productImageUrls[2],
+      // image4: productImageUrls[3],
+      // image5: productImageUrls[4],
+      // image6: productImageUrls[5],
+      // image7: productImageUrls[6],
+      // image8: productImageUrls[7],
+      // image9: productImageUrls[8],
+      // image10: productImageUrls[9],
+    };
+    console.log(product);
+    await Product.updateOne({ slug: req.params.slug }, product);
+
     // const ratings = commentImageUrls.map((urls, index) => {
     //   return new Rating({
     //     productType: req.body[`productType${index + 1}`],
@@ -246,20 +413,16 @@ class SiteController {
     //   });
     // });
 
-    // Save all ratings
     // await Rating.insertMany(ratings);
 
     return res.status(201).json({
       success: true,
-      message: "Product uploaded successfully",
-      images: productImageUrls,
-      commentImages: commentImageUrls,
+      message: "Product edit successfully",
     });
   }
 
   async getProduct(req, res, next) {
     try {
-      console.log("hahah" + req.user);
       const { slug } = req.params;
       const product = await Product.findOne({ slug: slug });
       const comments = await Rating.find({ productId: product._id });
@@ -287,6 +450,7 @@ class SiteController {
       totalPrice,
       typeProduct,
       tiktokShopDiscount,
+      sellerId,
     } = req.body;
     console.log(slug);
     const product = await Product.findOne({ slug: slug });
@@ -297,52 +461,55 @@ class SiteController {
       phone,
       city: selectedCity,
       address: selectedWard + ", " + selectedDistrict + ", " + selectedCity,
-      sellerId: "670e3a8cae0f3baeebf5de2c",
+      sellerId,
       quantity,
       discount,
       tiktokShopDiscount,
-      totalPrice,
+      totalMonney: totalPrice,
       typeProduct,
       createdAt: Date.now() + 7 * 60 * 60 * 1000,
     });
     console.log(order);
-    // order
-    //   .save()
-    //   .then(() => res.redirect("/xac-nhan-dat-hang"))
-    //   .catch(next);
+    await order.save();
+
     return res.status(201).json({
       success: true,
-      message: "Product uploaded successfully",
+      message: "Order successfully",
     });
   }
-  getListOrder(req, res, next) {
-    const perPage = 20; // Số lượng đơn hàng trên mỗi trang
-    const page = req.query.page || 1; // Trang hiện tại, mặc định là trang 1
+  async getListOrder(req, res, next) {
+    const pageSize = 20;
+    const pageIndex = req.query.pageIndex || 1;
 
-    // Đếm tổng số bản ghi trong cơ sở dữ liệu
-    Order.countDocuments({ userAdmin: "Tiến" })
-      .then((totalOrders) => {
-        // Tính toán số lượng trang
-        const totalPages = Math.ceil(totalOrders / perPage);
-        // Tìm các đơn hàng trong trang hiện tại
-        Order.find({ userAdmin: "Tiến" })
-          .sort({ createdAt: -1 })
-          .skip((page - 1) * perPage) // Bỏ qua (skip) các đơn hàng ở trang trước
-          .limit(perPage) // Giới hạn số lượng đơn hàng trên mỗi trang
-          .then((orders) => {
-            res.render("admin/order", {
-              orders: mutipleMongooseToObject(orders),
-              currentPage: Number(page), // Trang hiện tại
-              hasNextPage: page < totalPages, // Kiểm tra xem có trang tiếp theo không
-              hasPreviousPage: page > 1, // Kiểm tra xem có trang trước đó không
-              nextPage: +page + 1, // Trang tiếp theo
-              previousPage: +page - 1, // Trang trước đó
-              lastPage: totalPages, // Tổng số trang
-            });
-          })
-          .catch(next);
-      })
-      .catch(next);
+    const totalOrders = await Order.countDocuments({ sellerId: req.user.id });
+    const totalPages = Math.ceil(totalOrders / pageSize);
+    const orders = await Order.find({ sellerId: req.user.id })
+      .populate("productId")
+      .sort({ createdAt: -1 })
+      .skip((pageIndex - 1) * pageSize)
+      .limit(pageSize);
+    res.json({
+      data: {
+        success: true,
+        orders: mutipleMongooseToObject(orders),
+        currentPage: Number(pageIndex), // Trang hiện tại
+        hasNextPage: pageIndex < totalPages, // Kiểm tra xem có trang tiếp theo không
+        hasPreviousPage: pageIndex > 1, // Kiểm tra xem có trang trước đó không
+        nextPage: +pageIndex + 1, // Trang tiếp theo
+        previousPage: +pageIndex - 1, // Trang trước đó
+        lastPage: totalPages, // Tổng số trang
+      },
+    });
+  }
+
+  async getListProduct(req, res, next) {
+    const products = await Product.find({ userId: req.user.id });
+    res.json({
+      data: {
+        success: true,
+        products: mutipleMongooseToObject(products),
+      },
+    });
   }
 
   deleteOrder(req, res, next) {
@@ -350,10 +517,11 @@ class SiteController {
       .then(() => res.redirect("back"))
       .catch(next);
   }
-  updateOrder(req, res, next) {
-    Order.updateOne({ _id: req.params.id }, req.body)
-      .then(() => res.redirect("back"))
-      .catch(next);
+  async updateOrder(req, res, next) {
+    await Order.updateOne({ _id: req.params.id }, { status: req.body.status });
+    return res.json({
+      success: true,
+    });
   }
 
   getListComment(req, res, next) {
@@ -398,7 +566,7 @@ class SiteController {
 
     // Generate JWT token
     const token = jwt.sign(
-      { email: user.email, role: user.role },
+      { email: user.email, role: user.role, id: user._id },
       process.env.SECRET_KEY,
       {
         expiresIn: "30d", // Thay đổi thành 30 ngày
@@ -414,6 +582,66 @@ class SiteController {
       token,
       role: user.role,
       expiration: expirationDate.toISOString(),
+    });
+  }
+
+  async deleteImageProduct(req, res, next) {
+    const productOfMember = await Product.findOne({
+      slug: req.params.slug,
+      userId: req.user.id,
+    });
+    if (!productOfMember) throw new Error("Sản phẩm không tồn tại");
+    const updateFields = {};
+
+    const image = req.body.image;
+
+    switch (image) {
+      case 1:
+        updateFields["image1"] = null;
+        break;
+      case 2:
+        updateFields["image2"] = null;
+        break;
+      case 3:
+        updateFields["image3"] = null;
+        break;
+      case 4:
+        updateFields["image4"] = null;
+        break;
+      case 5:
+        updateFields["image5"] = null;
+        break;
+      case 6:
+        updateFields["image6"] = null;
+        break;
+      case 7:
+        updateFields["image7"] = null;
+        break;
+      case 8:
+        updateFields["image8"] = null;
+        break;
+      case 9:
+        updateFields["image9"] = null;
+        break;
+      case 0:
+        updateFields["image10"] = null;
+        break;
+      default:
+        break;
+    }
+
+    // Thực hiện cập nhật nếu có trường để cập nhật
+    if (Object.keys(updateFields).length > 0) {
+      await Product.updateOne({ slug: req.params.slug }, updateFields);
+    }
+
+    // Thực hiện cập nhật nếu có trường để cập nhật
+    if (Object.keys(updateFields).length > 0) {
+      await Product.updateOne({ slug: req.params.slug }, updateFields);
+    }
+    return res.status(201).json({
+      success: true,
+      message: "successfully",
     });
   }
 }
