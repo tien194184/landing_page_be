@@ -407,6 +407,7 @@ class SiteController {
       rating1.imageRating4 = fourthImageIncomment1.url;
     }
     await Product.updateOne({ slug: req.params.slug }, product);
+    const comments = await Rating.find({ productId: product._id });
     const rating1 = {
       productType: req.body.productType1,
       comment: req.body.comment1,
