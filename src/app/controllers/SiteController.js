@@ -267,12 +267,12 @@ class SiteController {
   }
 
   async editProduct(req, res, next) {
-    console.log(req.body);
     const productOfMember = await Product.findOne({
       slug: req.params.slug,
       userId: req.user.id,
     });
-    if (!productOfMember) throw new Error("Sản phẩm không tồn tại");
+    if (!productOfMember)
+      return res.status(500).json({ message: "An error occurred" });
     const image1 = req.files["image1"]?.[0] || null;
     const image2 = req.files["image2"]?.[0] || null;
     const image3 = req.files["image3"]?.[0] || null;
@@ -283,6 +283,13 @@ class SiteController {
     const image8 = req.files["image8"]?.[0] || null;
     const image9 = req.files["image9"]?.[0] || null;
     const image10 = req.files["image10"]?.[0] || null;
+    const imageShop = req.files["imageShop"]?.[0] || null;
+    const imagesComment1 = req.files["imagesComment1[]"] || [];
+    const imagesComment2 = req.files["imagesComment2[]"] || [];
+    const imagesComment3 = req.files["imagesComment3[]"] || [];
+    const imagesComment4 = req.files["imagesComment4[]"] || [];
+    const imagesComment5 = req.files["imagesComment5[]"] || [];
+    const imagesComment6 = req.files["imagesComment6[]"] || [];
     const uploadImage = (image) => {
       if (!image) return "";
       return cloudinary.uploader.upload(image.path);
@@ -298,6 +305,11 @@ class SiteController {
       imageproduct8,
       imageproduct9,
       imageproduct10,
+      imageShopCloud,
+      firstImageIncomment1,
+      secondImageIncomment1,
+      thirdImageIncomment1,
+      fourthImageIncomment1,
     ] = await Promise.all([
       uploadImage(image1),
       uploadImage(image2),
@@ -309,48 +321,12 @@ class SiteController {
       uploadImage(image8),
       uploadImage(image9),
       uploadImage(image10),
+      uploadImage(imageShop),
+      uploadImage(imagesComment1?.[0]),
+      uploadImage(imagesComment1?.[1]),
+      uploadImage(imagesComment1?.[2]),
+      uploadImage(imagesComment1?.[3]),
     ]);
-    console.log(
-      image1,
-      image2,
-      image3,
-      image4,
-      image5,
-      image6,
-      image7,
-      image8,
-      image9,
-      image10
-    );
-    console.log([
-      imageproduct1,
-      imageproduct2,
-      imageproduct3,
-      imageproduct4,
-      imageproduct5,
-      imageproduct6,
-      imageproduct7,
-      imageproduct8,
-      imageproduct9,
-      imageproduct10,
-    ]);
-
-    // const productImages = req.files["imageProducts[]"] || [];
-    // const commentImages = [
-    //   req.files["imagesComment1[]"] || [],
-    //   req.files["imagesComment2[]"] || [],
-    //   req.files["imagesComment3[]"] || [],
-    //   req.files["imagesComment4[]"] || [],
-    //   req.files["imagesComment5[]"] || [],
-    //   req.files["imagesComment6[]"] || [],
-    // ];
-
-    const uploadImagesToCloudinary = async (images) => {
-      const uploadPromises = images.map((image) =>
-        cloudinary.uploader.upload(image.path)
-      );
-      return await Promise.all(uploadPromises);
-    };
 
     // const uploadedProductImages =
     //   productImages.length > 0
@@ -383,22 +359,78 @@ class SiteController {
       fiveStarCount: req.body.fiveStarCount,
       fourStarCount: req.body.fourStarCount,
       threeStarCount: req.body.threeStarCount,
-      // imageShop: imageShop,
-      shop: req.body.nameShop,
-      // userId: req.user._id,
-      // image1: productImageUrls[0],
-      // image2: productImageUrls[1],
-      // image3: productImageUrls[2],
-      // image4: productImageUrls[3],
-      // image5: productImageUrls[4],
-      // image6: productImageUrls[5],
-      // image7: productImageUrls[6],
-      // image8: productImageUrls[7],
-      // image9: productImageUrls[8],
-      // image10: productImageUrls[9],
+      shop: req.body.shop,
     };
-    console.log(product);
+    if (imageShopCloud) {
+      product.imageShop = imageShopCloud.url;
+    }
+    if (imageproduct1) {
+      product.image1 = imageproduct1.url;
+    }
+    if (imageproduct2) {
+      product.image2 = imageproduct2.url;
+    }
+    if (imageproduct3) {
+      product.image3 = imageproduct3.url;
+    }
+    if (imageproduct4) {
+      product.image4 = imageproduct4.url;
+    }
+    if (imageproduct5) {
+      product.image5 = imageproduct5.url;
+    }
+    if (imageproduct6) {
+      product.image6 = imageproduct6.url;
+    }
+    if (imageproduct7) {
+      product.image7 = imageproduct7.url;
+    }
+    if (imageproduct8) {
+      product.image8 = imageproduct8.url;
+    }
+    if (imageproduct9) {
+      product.image9 = imageproduct9.url;
+    }
+    if (imageproduct10) {
+      product.image10 = imageproduct10.url;
+    }
+    if (firstImageIncomment1) {
+      rating1.imageRating1 = firstImageIncomment1.url;
+    }
+    if (secondImageIncomment1) {
+      rating1.imageRating2 = secondImageIncomment1.url;
+    }
+    if (thirdImageIncomment1) {
+      rating1.imageRating3 = thirdImageIncomment1.url;
+    }
+    if (fourthImageIncomment1) {
+      rating1.imageRating4 = fourthImageIncomment1.url;
+    }
     await Product.updateOne({ slug: req.params.slug }, product);
+    const rating1 = {
+      productType: req.body.productType1,
+      comment: req.body.comment1,
+    };
+    const rating2 = {
+      productType: req.body.productType2,
+      comment: req.body.comment2,
+    };
+    const rating3 = {
+      productType: req.body.productType3,
+      comment: req.body.comment3,
+    };
+    const rating4 = {
+      productType: req.body.productType4,
+      comment: req.body.comment4,
+    };
+    const rating5 = {
+      productType: req.body.productType5,
+      comment: req.body.comment5,
+    };
+    const rating6 = {
+      productType: req.body.productType6,
+      comment: req.body.comment6,
+    };
 
     // const ratings = commentImageUrls.map((urls, index) => {
     //   return new Rating({
@@ -413,7 +445,7 @@ class SiteController {
     //   });
     // });
 
-    // await Rating.insertMany(ratings);
+    // await Rating.update([rating1]);
 
     return res.status(201).json({
       success: true,
@@ -590,7 +622,8 @@ class SiteController {
       slug: req.params.slug,
       userId: req.user.id,
     });
-    if (!productOfMember) throw new Error("Sản phẩm không tồn tại");
+    if (!productOfMember)
+      return res.status(500).json({ message: "An error occurred", error });
     const updateFields = {};
 
     const image = req.body.image;
