@@ -310,6 +310,26 @@ class SiteController {
       secondImageIncomment1,
       thirdImageIncomment1,
       fourthImageIncomment1,
+      firstImageIncomment2,
+      secondImageIncomment2,
+      thirdImageIncomment2,
+      fourthImageIncomment2,
+      firstImageIncomment3,
+      secondImageIncomment3,
+      thirdImageIncomment3,
+      fourthImageIncomment3,
+      firstImageIncomment4,
+      secondImageIncomment4,
+      thirdImageIncomment4,
+      fourthImageIncomment4,
+      firstImageIncomment5,
+      secondImageIncomment5,
+      thirdImageIncomment5,
+      fourthImageIncomment5,
+      firstImageIncomment6,
+      secondImageIncomment6,
+      thirdImageIncomment6,
+      fourthImageIncomment6,
     ] = await Promise.all([
       uploadImage(image1),
       uploadImage(image2),
@@ -326,23 +346,27 @@ class SiteController {
       uploadImage(imagesComment1?.[1]),
       uploadImage(imagesComment1?.[2]),
       uploadImage(imagesComment1?.[3]),
+      uploadImage(imagesComment2?.[0]),
+      uploadImage(imagesComment2?.[1]),
+      uploadImage(imagesComment2?.[2]),
+      uploadImage(imagesComment2?.[3]),
+      uploadImage(imagesComment3?.[0]),
+      uploadImage(imagesComment3?.[1]),
+      uploadImage(imagesComment3?.[2]),
+      uploadImage(imagesComment3?.[3]),
+      uploadImage(imagesComment4?.[0]),
+      uploadImage(imagesComment4?.[1]),
+      uploadImage(imagesComment4?.[2]),
+      uploadImage(imagesComment4?.[3]),
+      uploadImage(imagesComment5?.[0]),
+      uploadImage(imagesComment5?.[1]),
+      uploadImage(imagesComment5?.[2]),
+      uploadImage(imagesComment5?.[3]),
+      uploadImage(imagesComment6?.[0]),
+      uploadImage(imagesComment6?.[1]),
+      uploadImage(imagesComment6?.[2]),
+      uploadImage(imagesComment6?.[3]),
     ]);
-
-    // const uploadedProductImages =
-    //   productImages.length > 0
-    //     ? await uploadImagesToCloudinary(productImages)
-    //     : [];
-    // const productImageUrls = uploadedProductImages.map((img) => img.url);
-
-    // const uploadedCommentImages = await Promise.all(
-    //   commentImages.map((images) =>
-    //     images.length > 0 ? uploadImagesToCloudinary(images) : []
-    //   )
-    // );
-
-    // const commentImageUrls = uploadedCommentImages.map((set) =>
-    //   set.map((img) => img.url)
-    // );
 
     const product = {
       productName: req.body.productName,
@@ -394,59 +418,81 @@ class SiteController {
     if (imageproduct10) {
       product.image10 = imageproduct10.url;
     }
-    if (firstImageIncomment1) {
-      rating1.imageRating1 = firstImageIncomment1.url;
-    }
-    if (secondImageIncomment1) {
-      rating1.imageRating2 = secondImageIncomment1.url;
-    }
-    if (thirdImageIncomment1) {
-      rating1.imageRating3 = thirdImageIncomment1.url;
-    }
-    if (fourthImageIncomment1) {
-      rating1.imageRating4 = fourthImageIncomment1.url;
-    }
+
     await Product.updateOne({ slug: req.params.slug }, product);
-    const comments = await Rating.find({ productId: product._id });
+
+    const comments = await Rating.find({ productId: productOfMember._id });
     const rating1 = {
       productType: req.body.productType1,
       comment: req.body.comment1,
     };
+    if (imagesComment1.length) {
+      rating1.imageRating1 = firstImageIncomment1.url;
+      rating1.imageRating2 = secondImageIncomment1.url;
+      rating1.imageRating3 = thirdImageIncomment1.url;
+      rating1.imageRating4 = fourthImageIncomment1.url;
+    }
     const rating2 = {
       productType: req.body.productType2,
       comment: req.body.comment2,
     };
+    if (imagesComment2.length) {
+      rating2.imageRating1 = firstImageIncomment2.url;
+      rating2.imageRating2 = secondImageIncomment2.url;
+      rating2.imageRating3 = thirdImageIncomment2.url;
+      rating2.imageRating4 = fourthImageIncomment2.url;
+    }
     const rating3 = {
       productType: req.body.productType3,
       comment: req.body.comment3,
     };
+    if (imagesComment3.length) {
+      rating3.imageRating1 = firstImageIncomment3.url;
+      rating3.imageRating2 = secondImageIncomment3.url;
+      rating3.imageRating3 = thirdImageIncomment3.url;
+      rating3.imageRating4 = fourthImageIncomment3.url;
+    }
     const rating4 = {
       productType: req.body.productType4,
       comment: req.body.comment4,
     };
+    if (imagesComment4.length) {
+      rating4.imageRating1 = firstImageIncomment4.url;
+      rating4.imageRating2 = secondImageIncomment4.url;
+      rating4.imageRating3 = thirdImageIncomment4.url;
+      rating4.imageRating4 = fourthImageIncomment4.url;
+    }
     const rating5 = {
       productType: req.body.productType5,
       comment: req.body.comment5,
     };
+    if (imagesComment5.length) {
+      rating5.imageRating1 = firstImageIncomment5.url;
+      rating5.imageRating2 = secondImageIncomment5.url;
+      rating5.imageRating3 = thirdImageIncomment5.url;
+      rating5.imageRating4 = fourthImageIncomment5.url;
+    }
     const rating6 = {
       productType: req.body.productType6,
       comment: req.body.comment6,
     };
+    if (imagesComment6.length) {
+      rating6.imageRating1 = firstImageIncomment6.url;
+      rating6.imageRating2 = secondImageIncomment6.url;
+      rating6.imageRating3 = thirdImageIncomment6.url;
+      rating6.imageRating4 = fourthImageIncomment6.url;
+    }
 
-    // const ratings = commentImageUrls.map((urls, index) => {
-    //   return new Rating({
-    //     productType: req.body[`productType${index + 1}`],
-    //     comment: req.body[`comment${index + 1}`],
-    //     imageRating1: urls[0],
-    //     imageRating2: urls[1],
-    //     imageRating3: urls[2],
-    //     imageRating4: urls[3],
-    //     productId: product._id,
-    //     createdAt: Date.now() + 7 * 60 * 60 * 1000,
-    //   });
-    // });
+    const updatePromises = [
+      Rating.updateOne({ _id: comments?.[0]?._id }, rating1),
+      Rating.updateOne({ _id: comments?.[1]?._id }, rating2),
+      Rating.updateOne({ _id: comments?.[2]?._id }, rating3),
+      Rating.updateOne({ _id: comments?.[3]?._id }, rating4),
+      Rating.updateOne({ _id: comments?.[4]?._id }, rating5),
+      Rating.updateOne({ _id: comments?.[5]?._id }, rating6),
+    ];
 
-    // await Rating.update([rating1]);
+    await Promise.all(updatePromises);
 
     return res.status(201).json({
       success: true,
