@@ -39,7 +39,6 @@ function authenticateToken(req, res, next) {
   }
 
   const token = authHeader.split(" ")[1]; // Tách lấy token sau "Bearer"
-  console.log(token);
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
     req.user = decoded; // Lưu thông tin người dùng vào req

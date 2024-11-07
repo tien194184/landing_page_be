@@ -141,7 +141,6 @@ class SiteController {
     try {
       // Extract the slug from request params
       const { slug } = req.body;
-      console.log(slug);
 
       // Find the product by slug
       const product = await Product.findOne({ slug });
@@ -168,7 +167,6 @@ class SiteController {
   }
 
   async postProduct(req, res, next) {
-    console.log(req.user.id);
     const productImages = req.files["imageProducts[]"] || [];
     const imageShop = req.files["imageShop"][0].path || null;
     const commentImages = [
@@ -567,9 +565,7 @@ class SiteController {
       option,
       sellerId,
     } = req.body;
-    console.log(slug);
     const product = await Product.findOne({ slug: slug });
-    console.log(req.body);
     const order = new Order({
       productId: product._id,
       name,
@@ -585,7 +581,6 @@ class SiteController {
       // typeProduct,
       createdAt: Date.now() + 7 * 60 * 60 * 1000,
     });
-    console.log(order);
     await order.save();
 
     return res.status(201).json({
@@ -646,10 +641,8 @@ class SiteController {
 
   async createAccount(req, res, next) {
     const { name, email, password } = req.body;
-    console.log(req.body);
     // Check if user already exists
     const userExists = await User.findOne({ email: email });
-    console.log(userExists);
     if (userExists) {
       return res.status(400).json({ message: "User already exists" });
     }
@@ -668,7 +661,6 @@ class SiteController {
 
     // Check if user exists
     const user = await User.findOne({ email: email });
-    console.log(user);
 
     if (!user) {
       return res.status(400).json({ message: "User Not Found" });
