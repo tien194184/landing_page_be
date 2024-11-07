@@ -202,13 +202,11 @@ class SiteController {
     const imageShopUrl = imageShop
       ? await cloudinary.uploader.upload(imageShop)
       : "";
-    console.log(imageShopUrl);
 
     const commentImageUrls = uploadedCommentImages.map((set) =>
       set.map((img) => img.url)
     );
 
-    // Create the product
     const product = new Product({
       productName: req.body.productName,
       price: req.body.price,
@@ -237,9 +235,20 @@ class SiteController {
       image10: productImageUrls[9],
       imageShop: imageShopUrl?.url,
       shop: req.body.nameShop,
+      option1: req.body.option1,
+      option2: req.body.option2,
+      option3: req.body.option3,
     });
-    console.log(product);
-    await product.save();
+
+    const avatarUrls = [
+      "http://res.cloudinary.com/dlkm9tiem/image/upload/v1730949742/r1ukq8zpzf3m6zkthuta.jpg",
+      "http://res.cloudinary.com/dlkm9tiem/image/upload/v1730949742/kig4vyryp1zqltnesqd2.jpg",
+      "http://res.cloudinary.com/dlkm9tiem/image/upload/v1730949742/snmaziiot7yk7jgccafx.jpg",
+      "http://res.cloudinary.com/dlkm9tiem/image/upload/v1730949741/jdiujo1py6nefrxvhzh2.jpg",
+      "http://res.cloudinary.com/dlkm9tiem/image/upload/v1730949742/xj2qglt6gjk7joxets8v.jpg",
+      "http://res.cloudinary.com/dlkm9tiem/image/upload/v1730949742/ap0b05vyzovu5akxiwzq.jpg",
+    ];
+    const usernames = ["N**g", "L**0", "H**e", "T**g", "P**5", "T**h"];
 
     const ratings = commentImageUrls.map((urls, index) => {
       return new Rating({
@@ -249,13 +258,15 @@ class SiteController {
         imageRating2: urls[1],
         imageRating3: urls[2],
         imageRating4: urls[3],
+        avatar: avatarUrls[index],
+        username: usernames[index],
         productId: product._id,
         createdAt: Date.now() + 7 * 60 * 60 * 1000,
       });
     });
 
     // Save all ratings
-    await Rating.insertMany(ratings);
+    await Promise.all([product.save(), Rating.insertMany(ratings)]);
 
     return res.status(201).json({
       success: true,
@@ -384,6 +395,9 @@ class SiteController {
       fourStarCount: req.body.fourStarCount,
       threeStarCount: req.body.threeStarCount,
       shop: req.body.shop,
+      option1: req.body.option1,
+      option2: req.body.option2,
+      option3: req.body.option3,
     };
     if (imageShopCloud) {
       product.imageShop = imageShopCloud.url;
@@ -422,9 +436,20 @@ class SiteController {
     await Product.updateOne({ slug: req.params.slug }, product);
 
     const comments = await Rating.find({ productId: productOfMember._id });
+    const avatarUrls = [
+      "http://res.cloudinary.com/dlkm9tiem/image/upload/v1730949742/r1ukq8zpzf3m6zkthuta.jpg",
+      "http://res.cloudinary.com/dlkm9tiem/image/upload/v1730949742/kig4vyryp1zqltnesqd2.jpg",
+      "http://res.cloudinary.com/dlkm9tiem/image/upload/v1730949742/snmaziiot7yk7jgccafx.jpg",
+      "http://res.cloudinary.com/dlkm9tiem/image/upload/v1730949741/jdiujo1py6nefrxvhzh2.jpg",
+      "http://res.cloudinary.com/dlkm9tiem/image/upload/v1730949742/xj2qglt6gjk7joxets8v.jpg",
+      "http://res.cloudinary.com/dlkm9tiem/image/upload/v1730949742/ap0b05vyzovu5akxiwzq.jpg",
+    ];
+    const usernames = ["N**g", "L**0", "H**e", "T**g", "P**5", "T**h"];
     const rating1 = {
       productType: req.body.productType1,
       comment: req.body.comment1,
+      avatar: avatarUrls[0],
+      username: usernames[0],
     };
     if (imagesComment1.length) {
       rating1.imageRating1 = firstImageIncomment1.url;
@@ -435,6 +460,8 @@ class SiteController {
     const rating2 = {
       productType: req.body.productType2,
       comment: req.body.comment2,
+      avatar: avatarUrls[1],
+      username: usernames[1],
     };
     if (imagesComment2.length) {
       rating2.imageRating1 = firstImageIncomment2.url;
@@ -445,6 +472,8 @@ class SiteController {
     const rating3 = {
       productType: req.body.productType3,
       comment: req.body.comment3,
+      avatar: avatarUrls[2],
+      username: usernames[2],
     };
     if (imagesComment3.length) {
       rating3.imageRating1 = firstImageIncomment3.url;
@@ -455,6 +484,8 @@ class SiteController {
     const rating4 = {
       productType: req.body.productType4,
       comment: req.body.comment4,
+      avatar: avatarUrls[3],
+      username: usernames[3],
     };
     if (imagesComment4.length) {
       rating4.imageRating1 = firstImageIncomment4.url;
@@ -465,6 +496,8 @@ class SiteController {
     const rating5 = {
       productType: req.body.productType5,
       comment: req.body.comment5,
+      avatar: avatarUrls[4],
+      username: usernames[4],
     };
     if (imagesComment5.length) {
       rating5.imageRating1 = firstImageIncomment5.url;
@@ -475,6 +508,8 @@ class SiteController {
     const rating6 = {
       productType: req.body.productType6,
       comment: req.body.comment6,
+      avatar: avatarUrls[5],
+      username: usernames[5],
     };
     if (imagesComment6.length) {
       rating6.imageRating1 = firstImageIncomment6.url;
@@ -524,11 +559,12 @@ class SiteController {
       selectedCity,
       selectedDistrict,
       selectedWard,
-      quantity,
-      discount,
-      totalPrice,
-      typeProduct,
-      tiktokShopDiscount,
+      // quantity,
+      // discount,
+      // totalPrice,
+      // typeProduct,
+      // tiktokShopDiscount,
+      option,
       sellerId,
     } = req.body;
     console.log(slug);
@@ -541,11 +577,12 @@ class SiteController {
       city: selectedCity,
       address: selectedWard + ", " + selectedDistrict + ", " + selectedCity,
       sellerId,
-      quantity,
-      discount,
-      tiktokShopDiscount,
-      totalMonney: totalPrice,
-      typeProduct,
+      option,
+      // quantity,
+      // discount,
+      // tiktokShopDiscount,
+      // totalMonney: totalPrice,
+      // typeProduct,
       createdAt: Date.now() + 7 * 60 * 60 * 1000,
     });
     console.log(order);

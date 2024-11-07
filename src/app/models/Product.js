@@ -33,6 +33,9 @@ const ProductSchema = new Schema({
   image8: { type: String },
   image9: { type: String },
   image10: { type: String },
+  option1: { type: String },
+  option2: { type: String },
+  option3: { type: String },
 });
 
 ProductSchema.pre("save", async function (next) {
