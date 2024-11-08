@@ -557,6 +557,7 @@ class SiteController {
       selectedCity,
       selectedDistrict,
       selectedWard,
+      house,
       // quantity,
       // discount,
       // totalPrice,
@@ -571,7 +572,14 @@ class SiteController {
       name,
       phone,
       city: selectedCity,
-      address: selectedWard + ", " + selectedDistrict + ", " + selectedCity,
+      address:
+        house +
+        ", " +
+        selectedWard +
+        ", " +
+        selectedDistrict +
+        ", " +
+        selectedCity,
       sellerId,
       option,
       // quantity,
