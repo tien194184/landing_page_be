@@ -450,10 +450,10 @@ class SiteController {
       username: usernames[0],
     };
     if (imagesComment1.length) {
-      rating1.imageRating1 = firstImageIncomment1.url || '';
-      rating1.imageRating2 = secondImageIncomment1.url || '';
-      rating1.imageRating3 = thirdImageIncomment1.url || '';
-      rating1.imageRating4 = fourthImageIncomment1.url || '';
+      rating1.imageRating1 = firstImageIncomment1.url || "";
+      rating1.imageRating2 = secondImageIncomment1.url || "";
+      rating1.imageRating3 = thirdImageIncomment1.url || "";
+      rating1.imageRating4 = fourthImageIncomment1.url || "";
     }
     const rating2 = {
       productType: req.body.productType2,
@@ -462,10 +462,10 @@ class SiteController {
       username: usernames[1],
     };
     if (imagesComment2.length) {
-      rating2.imageRating1 = firstImageIncomment2.url || '';
-      rating2.imageRating2 = secondImageIncomment2.url || '';
-      rating2.imageRating3 = thirdImageIncomment2.url || '';
-      rating2.imageRating4 = fourthImageIncomment2.url || '';
+      rating2.imageRating1 = firstImageIncomment2.url || "";
+      rating2.imageRating2 = secondImageIncomment2.url || "";
+      rating2.imageRating3 = thirdImageIncomment2.url || "";
+      rating2.imageRating4 = fourthImageIncomment2.url || "";
     }
     const rating3 = {
       productType: req.body.productType3,
@@ -474,10 +474,10 @@ class SiteController {
       username: usernames[2],
     };
     if (imagesComment3.length) {
-      rating3.imageRating1 = firstImageIncomment3.url || '';
-      rating3.imageRating2 = secondImageIncomment3.url || '';
-      rating3.imageRating3 = thirdImageIncomment3.url || '';
-      rating3.imageRating4 = fourthImageIncomment3.url || '';
+      rating3.imageRating1 = firstImageIncomment3.url || "";
+      rating3.imageRating2 = secondImageIncomment3.url || "";
+      rating3.imageRating3 = thirdImageIncomment3.url || "";
+      rating3.imageRating4 = fourthImageIncomment3.url || "";
     }
     const rating4 = {
       productType: req.body.productType4,
@@ -486,10 +486,10 @@ class SiteController {
       username: usernames[3],
     };
     if (imagesComment4.length) {
-      rating4.imageRating1 = firstImageIncomment4.url || '';
-      rating4.imageRating2 = secondImageIncomment4.url || '';
-      rating4.imageRating3 = thirdImageIncomment4.url || '';
-      rating4.imageRating4 = fourthImageIncomment4.url || '';
+      rating4.imageRating1 = firstImageIncomment4.url || "";
+      rating4.imageRating2 = secondImageIncomment4.url || "";
+      rating4.imageRating3 = thirdImageIncomment4.url || "";
+      rating4.imageRating4 = fourthImageIncomment4.url || "";
     }
     const rating5 = {
       productType: req.body.productType5,
@@ -498,10 +498,10 @@ class SiteController {
       username: usernames[4],
     };
     if (imagesComment5.length) {
-      rating5.imageRating1 = firstImageIncomment5.url || '';
-      rating5.imageRating2 = secondImageIncomment5.url || '';
-      rating5.imageRating3 = thirdImageIncomment5.url || '';
-      rating5.imageRating4 = fourthImageIncomment5.url || '';
+      rating5.imageRating1 = firstImageIncomment5.url || "";
+      rating5.imageRating2 = secondImageIncomment5.url || "";
+      rating5.imageRating3 = thirdImageIncomment5.url || "";
+      rating5.imageRating4 = fourthImageIncomment5.url || "";
     }
     const rating6 = {
       productType: req.body.productType6,
@@ -510,10 +510,10 @@ class SiteController {
       username: usernames[5],
     };
     if (imagesComment6.length) {
-      rating6.imageRating1 = firstImageIncomment6.url || '';
-      rating6.imageRating2 = secondImageIncomment6.url || '';
-      rating6.imageRating3 = thirdImageIncomment6.url || '';
-      rating6.imageRating4 = fourthImageIncomment6.url || '';
+      rating6.imageRating1 = firstImageIncomment6.url || "";
+      rating6.imageRating2 = secondImageIncomment6.url || "";
+      rating6.imageRating3 = thirdImageIncomment6.url || "";
+      rating6.imageRating4 = fourthImageIncomment6.url || "";
     }
 
     const updatePromises = [
@@ -572,14 +572,14 @@ class SiteController {
       name,
       phone,
       city: selectedCity,
-      address:
-        house +
-        ", " +
-        selectedWard +
-        ", " +
-        selectedDistrict +
-        ", " +
-        selectedCity,
+      address: house,
+      // +
+      // ", " +
+      // selectedWard +
+      // ", " +
+      // selectedDistrict +
+      // ", " +
+      // selectedCity
       sellerId,
       option,
       // quantity,
